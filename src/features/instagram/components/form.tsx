@@ -24,9 +24,16 @@ import { getHttpErrorMessage } from "@/lib/http";
 import { useVideoInfo } from "@/services/api/queries";
 
 const formSchema = z.object({
-  postUrl: z.string().url({
-    message: "Provide a valid Instagram post link",
-  }),
+  postUrl: z
+    .string()
+    .url({ message: "Provide a valid URL" })
+    .refine(
+      (url) =>
+        url.includes("instagram.com/") || url.includes("tiktok.com/"),
+      {
+        message: "URL must be from Instagram or TikTok",
+      }
+    ),
 });
 
 export function InstagramVideoForm() {
@@ -76,7 +83,7 @@ export function InstagramVideoForm() {
                   <Input
                     disabled={isPending}
                     type="url"
-                    placeholder="Paste your Instagram link here..."
+                    placeholder="Paste your Instagram or TikTok link here..."
                     className="h-12 w-full sm:pr-28"
                     {...field}
                   />
