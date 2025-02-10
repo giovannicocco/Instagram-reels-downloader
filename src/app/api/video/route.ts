@@ -19,6 +19,17 @@ function handleError(error: any) {
   }
 }
 
+async function getTikTokVideoInfo(postUrl: string): Promise<VideoInfo> {
+  // Placeholder function for fetching TikTok video information
+  // Implement the actual logic to fetch TikTok video information
+  return {
+    filename: "tiktok-video.mp4",
+    width: "720",
+    height: "1280",
+    videoUrl: "https://example.com/tiktok-video.mp4",
+  };
+}
+
 export async function GET(request: Request) {
   if (!INSTAGRAM_CONFIGS.enableServerAPI) {
     const notImplementedResponse = makeErrorResponse("Not Implemented");
@@ -31,14 +42,19 @@ export async function GET(request: Request) {
     return NextResponse.json(badRequestResponse, { status: 400 });
   }
 
-  const postId =await  getPostIdFromUrl(postUrl);
+  const postId = await getPostIdFromUrl(postUrl);
   if (!postId) {
     const noPostIdResponse = makeErrorResponse("Invalid Post URL");
     return NextResponse.json(noPostIdResponse, { status: 400 });
   }
 
   try {
-    const postJson = await getVideoInfo(postId);
+    let postJson: VideoInfo;
+    if (postUrl.includes("tiktok.com")) {
+      postJson = await getTikTokVideoInfo(postUrl);
+    } else {
+      postJson = await getVideoInfo(postId);
+    }
     const response = makeSuccessResponse<VideoInfo>(postJson);
     return NextResponse.json(response, { status: 200 });
   } catch (error: any) {
